@@ -30,7 +30,7 @@ function JPMenu() {
   const { colorMode, toggleColorMode } = useColorMode()
   return (
     <>
-      <Navbar collapseOnSelect expand="md" className="mx-5 nvz">
+      <Navbar collapseOnSelect expand="md" className="mx-4 nvz">
 
         <Navbar.Brand className='brand' style={{padding:'0'}}>
         <NavLink to="/home">
