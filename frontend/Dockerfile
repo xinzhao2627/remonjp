@@ -1,8 +1,8 @@
 FROM node:latest
 
-WORKDIR /app
+WORKDIR /frontend
 
-COPY package.json .
+COPY package.json package-lock.json ./
 
 RUN npm install
 

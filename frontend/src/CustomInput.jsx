@@ -192,7 +192,7 @@ function CustomInput() {
                     letterSpacing={'2px'}
                     resize={'vertical'}
                     border={'2px solid black'}
-                    size={'xl'}
+                    height={'200px'}
                 />
                 <HStack width={'100%'} justifyContent={'center'}>
                     <Button onClick={toggleColorMode} className='m-1'>

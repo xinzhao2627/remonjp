@@ -2,7 +2,12 @@ const express = require('express')
 const cors = require('cors')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
-const db = require('better-sqlite3')('./rdict.db')
+// const db = require('better-sqlite3')('./rdict.db')
+const sqlite3 = require('sqlite3').verbose()
+let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
+    if (err) return console.error(err.message);
+})
+
 
 const app = express()
 // MIDDLE WARES
@@ -22,7 +27,16 @@ const posMapping = {
     'その他': 'other'
 }
 async function executeQuery(query, p = []) {
-    return db.prepare(query).all(p)
+    return new Promise((resolve, reject) => {
+        db.all(query, p, (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows);   
+
+            }
+        });
+    });
 }
 
 let tokenizer;
@@ -64,38 +78,6 @@ async function lookupKanji(s){
     `
     return await executeQuery(q+" GROUP BY k_element", [s['jp_sentence']])
 }
-// async function getTokenData (t) {
-//     let parts = []
-//     if (posMapping[t['pos']] !== 'auxillary' 
-//         && posMapping[t['pos']] !== 'particle' 
-//         && posMapping[t['pos']] !== 'symbol' 
-//         && posMapping[t['pos']] !== 'other'
-//         && posMapping[t['pos']] !== 'auxiliary'  
-//         && (t['surface_form'].length !== 1 || wanakana.isKanji(t['surface_form'])) 
-//         && !wanakana.isKatakana(t['surface_form'])
-//         ) {
-        
-//         q =`
-//             WITH filtered_data AS (
-//                 SELECT sense.seq, gloss_list.gloss
-//                 FROM jmdict_r_ele AS reading 
-//                 JOIN jmdict_sense AS sense ON sense.seq = reading.seq
-//                 JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
-//                 JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
-//                 WHERE ( kanji.keb = ? OR reading.reb = ? ) AND sense.pos LIKE ?
-//             )
-//             SELECT GROUP_CONCAT(DISTINCT(gloss)) AS gloss
-//             FROM filtered_data
-//         `
-//         let arr= [t['surface_form'], t['surface_form'], `%${posMapping[t['pos']]}%`]
-//         // console.time("\t\tpart")
-//         parts =  await executeQuery(q, arr)
-//         // console.timeEnd("\t\tpart")
-
-//     }
-//     return parts
-
-// }
 async function getQuiz (lv, limit, freq){
     let arr = []
     let toConcat = []
@@ -166,7 +148,7 @@ async function structurize (sentences){
         FROM filtered_data
         GROUP BY co
         `
-        console.log(wq, s['jp_sentence'])
+        // console.log(wq, s['jp_sentence'])
         
         console.time("parts")
         let parts = await executeQuery(wq)

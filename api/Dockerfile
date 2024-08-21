@@ -1,13 +1,12 @@
 FROM node:latest
-
 RUN npm install -g nodemon
+WORKDIR /api
 
-WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
 
 COPY . .
 
-RUN npm install
-
 EXPOSE 4000
 
-CMD [ "npm", "run", "dev" ]
+CMD ["npm", "run", "dev"]
