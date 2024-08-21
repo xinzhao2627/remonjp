@@ -1,27 +1,17 @@
 /* eslint-disable no-unused-vars */
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerBody,
-  useDisclosure,
+  useColorMode,
   Button,
-  VStack,
   Text,
-  Icon,
-  Box,
-  Menu,
-  MenuButton,
-  Portal,
-  MenuList,
-  MenuItem,
+  Heading,
   Accordion,
+  AccordionPanel,
   AccordionItem,
   AccordionButton,
-  AccordionPanel,
+  Box,
+  Center,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { GiPerspectiveDiceSixFacesRandom } from 'react-icons/gi';
@@ -29,70 +19,74 @@ import { MdDashboardCustomize } from "react-icons/md";
 import { HiMiniHome } from 'react-icons/hi2';
 import { FaBrain } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import {CSSTransition} from 'react-transition-group';
+
+
 function JPMenu() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode()
   return (
     <>
-      <Button colorScheme='blue' onClick={onOpen} variant='outline'  className='m-1'>
-        Main menu
-      </Button>
-      <Drawer placement={'left'} onClose={onClose} isOpen={isOpen}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerHeader borderBottomWidth='1px'>Main Menu</DrawerHeader>
-          <DrawerBody padding={0}>
-            <VStack spacing={0} align='stretch'>
-              <Box className='smb'>
-                <Icon as={HiMiniHome} boxSize={7} className='icb' />
-                Home
-              </Box>
-              <Accordion allowMultiple>
-                <AccordionItem className='acoi'>
-                
+      <Navbar collapseOnSelect expand="md" className="mx-5 nvz">
 
-                  <AccordionButton className='acobo p-0'>
-                    <Box className='smb'>
-                      <Icon as={FaBrain} boxSize={7} className='icb' />
-                      Quiz
-                    </Box>
+        <Navbar.Brand className='brand' style={{padding:'0'}}>
+        <NavLink to="/home">
+          <Heading size={'lg'} color={colorMode === 'light' ? 'black' : 'white'} marginBottom={0} className='brand-h'>
+            レモンJP
+          </Heading>     
+        </NavLink>   
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" style={{backgroundColor:"#FED7E2"}}/>
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <NavLink to="/random">
+              <label className='nvp p-2' >
+                Random
+              </label>
+            </NavLink>
+            <NavLink to="/custom">
+              <label className='nvp p-2' >
+                Custom
+              </label>
+            </NavLink>
+            <Accordion allowMultiple>
+                <AccordionItem border={'0'}>
+                  <AccordionButton className='nvp'>
+                  <label style={{width:'100%'}}>
+                  Quiz
+                  </label>
                   </AccordionButton>
+                  <Box className='a-panel' bg={colorMode === 'dark' ? 'blue.600' : 'white'} borderRadius={'5px'}>
                   {[5,4,3,2,1].map((x, i) => {
                     const data  = `n${x}`
                     return (
                       <NavLink to='/quiz' key={`nav-N${x}`} state={{data}}>
-                        <AccordionPanel className='sma' >
+                        <AccordionPanel className='nvp' >
                           JLPT N{x}
                         </AccordionPanel>
                       </NavLink>
                     )
-
                   })}
-                  
+                  </Box>    
                 </AccordionItem>
               </Accordion>
-              <NavLink to='/custom'>
-                <Box className='smb'>
-                  <Icon as={MdDashboardCustomize} boxSize={7} className='icb' />
-                    Custom
-                </Box>
-              </NavLink>
-              <NavLink to='/custominput'>
-                <Box className='smb'>
-                  <Icon as={MdDashboardCustomize} boxSize={7} className='icb' />
-                    Custom Input
-                </Box>
-              </NavLink>
-              <NavLink to='/random'>
-                <Box className='smb'>
-                  <Icon as={GiPerspectiveDiceSixFacesRandom} boxSize={7} className='icb' />
-                  Random
-                </Box>
-              </NavLink>
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-
+            <NavLink to="/custominput">
+              <label className='nvp p-2'>
+                Custom Input
+              </label>
+            </NavLink>
+          </Nav>
+          <Nav>
+            <Nav.Link href="#deets"></Nav.Link>
+            <Button onClick={toggleColorMode} className='m-1'>
+              {colorMode === 'light' ? 'Dark' : 'Light'} mode
+            </Button>
+          </Nav>
+        </Navbar.Collapse>
+    </Navbar>
     </>
   );
 }

@@ -255,7 +255,8 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
     }
     return (
         <div style={{height:'100vh'}}>
-            <div style={{height:'70%',flexDirection:'column',display:'flex',alignItems:'center', justifyContent:'center'}}>
+        <JPMenu />
+            <div style={{flexDirection:'column',display:'flex',alignItems:'center', justifyContent:'center'}} className='mt-5'>
                     <div width={'100%'}>
                         {(typeof structSentences[itemIndex] === "undefined" && !startLoading) 
                         ? <Heading>{`Generate ${field} sentence!`}</Heading>
@@ -304,12 +305,8 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
                 }
 
                 <Box>
-                    <Button onClick={toggleColorMode} className='m-1'>
-                        {colorMode === 'light' ? 'Dark' : 'Light'} mode
-                    </Button>
                     <Button colorScheme='blue' variant='outline' onClick={() => fetchRandom(subUrl)} className='m-1'>{btnLabel}</Button>
                     {(type === 'custom' && <Config configDict={configDict} setConfigDict={setConfigDict}/>)}
-                    <JPMenu />
                     <DrawerKanji kanji_data = {structKanji[itemIndex]} />
                 </Box>
                 {(type === 'quiz') && <QuizInput 

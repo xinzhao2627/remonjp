@@ -9,6 +9,7 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
 import Quiz from './Quiz'
 import Custom from './Custom'
 import CustomInput from './CustomInput'
+import Home from './Home'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Router>
       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       <Routes>
+        <Route exact path = '/home' Component={Home}/>
         <Route exact path='/random' Component={RandomSentence}/>
         <Route exact path='/quiz' Component={Quiz}/>
         <Route exact path='/custom' Component={Custom}/>

@@ -24,7 +24,6 @@ const japDummy = `切政ルラご史際ぴふ事種の法結そす社芸ぜや�
 function CustomInput() {
     // 
     const [input, setinput] = useState('切政ルラご史際ぴふ事種の')
-    const { colorMode, toggleColorMode } = useColorMode()
     const [isStructurized, setIsStructurized] = useState(false)
     const [tabIndex, setTabIndex] = useState(0)
     const [structId, setStructId] = useState([])
@@ -176,42 +175,41 @@ function CustomInput() {
     }
 
 
-    return <Tabs onChange={e=> setTabIndex(e)} defaultIndex={0} index={tabIndex}>
-        <TabList>
-            <Tab>Your input</Tab>
-            <Tab>Structured Outcome</Tab>
-        </TabList>
-        <TabPanels className='py-2'>
-            <TabPanel>        
-                <Textarea
-                    value={input}
-                    onChange={e => setinput(e.target.value)}
-                    className='py-1 px-2 mb-5 jent'
-                    fontSize={'4xl'}
-                    fontWeight={'300'}
-                    letterSpacing={'2px'}
-                    resize={'vertical'}
-                    border={'2px solid black'}
-                    height={'200px'}
-                />
-                <HStack width={'100%'} justifyContent={'center'}>
-                    <Button onClick={toggleColorMode} className='m-1'>
-                        {colorMode === 'light' ? 'Dark' : 'Light'} mode
-                    </Button>
-                    <Button colorScheme='blue' onClick={fetchRandom} isLoading={startLoading}>
-                        Structurize
-                    </Button>
-                    <JPMenu />
-                </HStack>
-            </TabPanel>
-            <TabPanel>
-                <Box>
-                    {(!fpart && !startLoading) ? <Heading>Add an input</Heading> : startLoading ? <Spinner/> : fpart}
-                </Box>
-                {(!startLoading) ? <DrawerKanji kanji_data = {kanji}/> : null}
-            </TabPanel>
-        </TabPanels>
-    </Tabs>;
+    return<div>
+        <JPMenu />
+        <Tabs onChange={e=> setTabIndex(e)} defaultIndex={0} index={tabIndex} className='mt-4'>
+            <TabList style={{justifyContent:'center'}}>
+                <Tab>Input</Tab>
+                <Tab>Structured Outcome</Tab>
+            </TabList>
+            <TabPanels className='py-2'>
+                <TabPanel>        
+                    <Textarea
+                        value={input}
+                        onChange={e => setinput(e.target.value)}
+                        className='py-1 px-2 mb-5 jent'
+                        fontSize={'4xl'}
+                        fontWeight={'300'}
+                        letterSpacing={'2px'}
+                        resize={'vertical'}
+                        border={`1px solid`}
+                        height={'200px'}
+                    />
+                    <HStack width={'100%'} justifyContent={'center'}>
+                        <Button colorScheme='blue' onClick={fetchRandom} isLoading={startLoading}>
+                            Structurize
+                        </Button>
+                    </HStack>
+                </TabPanel>
+                <TabPanel>
+                    <Box>
+                        {(!fpart && !startLoading) ? <Heading>Add an input</Heading> : startLoading ? <Spinner/> : fpart}
+                    </Box>
+                    {(!startLoading) ? <DrawerKanji kanji_data = {kanji}/> : null}
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
+    </div> 
 }
 
 export default CustomInput;

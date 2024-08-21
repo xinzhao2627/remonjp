@@ -9,7 +9,7 @@ function Quiz() {
     const location = useLocation()
     const {data} = location.state || 'n5'
     return <>
-
+        
         <JMTemplate subUrl='quiz' btnLabel='Generate' field={data} type='quiz'/>
     </>
 }

@@ -180,6 +180,7 @@ app.get('/api/quiz/:field/:freq?/:limit?', async (req, res) => {
         const field = req.params.field.toLowerCase()
         const limit = req.params.limit || 1
         const freq = req.params.freq || 0
+        console.log(field," " ,limit," " ,freq)
         if (field in levels && parseInt(limit) > 0 && parseInt(freq) >= 0){
 
             const sentencesUnstructured = await getQuiz(levels[field], limit, freq)
