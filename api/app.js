@@ -12,7 +12,7 @@ let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
 const app = express()
 // MIDDLE WARES
 app.use(cors())
-// app.use()
+
 
 
 
@@ -288,6 +288,17 @@ app.get('/api/random:limit?', async (req, res) => {
         res.status(500).json({ error: `Database error`})
     }
 })
+
+app.get('/', (req, res) => {
+    res.send("remonjp api on vercel, see: \n /api/random \n /api/quiz and other post requests!")
+})
+
+app.use((req, res, next) => {
+    res.status(404).json({
+        error: "Not Found",
+        message: "The requested resource could not be found."
+    });
+});
 app.listen(4000, () => {
     initializeTokenizer()
 })
