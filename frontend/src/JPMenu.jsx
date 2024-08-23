@@ -30,7 +30,7 @@ function JPMenu() {
   const { colorMode, toggleColorMode } = useColorMode()
   return (
     <>
-      <Navbar collapseOnSelect expand="md" className="mx-4 nvz">
+      <Navbar collapseOnSelect expand="md" className="mx-4 nvz pt-4">
 
         <Navbar.Brand className='brand' style={{padding:'0'}}>
         <NavLink to="/home">
@@ -41,7 +41,7 @@ function JPMenu() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" style={{backgroundColor:"#FED7E2"}}/>
         <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="me-auto " >
             <NavLink to="/random">
               <label className='nvp p-2' >
                 Random
@@ -59,7 +59,7 @@ function JPMenu() {
                   Quiz
                   </label>
                   </AccordionButton>
-                  <Box className='a-panel' bg={colorMode === 'dark' ? 'blue.600' : 'white'} borderRadius={'5px'}>
+                  <Box className='a-panel' bg='blue.600' borderRadius={'5px'} color={'white'}>
                   {[5,4,3,2,1].map((x, i) => {
                     const data  = `n${x}`
                     return (
@@ -81,7 +81,7 @@ function JPMenu() {
           </Nav>
           <Nav>
             <Nav.Link href="#deets"></Nav.Link>
-            <Button onClick={toggleColorMode} className='m-1'>
+            <Button onClick={toggleColorMode} bg={'transparent'} border={''}>
               {colorMode === 'light' ? 'Dark' : 'Light'} mode
             </Button>
           </Nav>

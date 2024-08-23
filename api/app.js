@@ -12,6 +12,10 @@ let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
 const app = express()
 // MIDDLE WARES
 app.use(cors())
+// app.use()
+
+
+
 app.use(express.json())
 const posMapping = {
     '名詞': 'noun',
@@ -98,20 +102,20 @@ async function structurize (sentences){
     
     for (const s of sentences) {
         s['structure'] = []
-        console.time("kanji")
+        // console.time("kanji")
         s['kanji']= await lookupKanji(s)
-        console.timeEnd("kanji")
+        // console.timeEnd("kanji")
 
-        console.time("tokenizeSentence")
+        // console.time("tokenizeSentence")
         let tokens = await tokenizeSentence(s['jp_sentence'])
-        console.timeEnd("tokenizeSentence")
+        // console.timeEnd("tokenizeSentence")
 
-        let co = 0
+        let co = 1
         let wq =`
             WITH filtered_data AS (
         `
         let addUn = false
-        console.time("token 1 loop")
+        // console.time("token 1 loop")
         for (let t of tokens) {
             
             const pass = posMapping[t['pos']] !== 'auxillary' 
@@ -128,48 +132,53 @@ async function structurize (sentences){
                 addUn = true
                 wq += `
                     SELECT 
-                    gloss_list.gloss, ${co++} as co
+                    gloss_list.gloss, ${co} as co
                     FROM jmdict_r_ele AS reading 
                     JOIN jmdict_sense AS sense ON sense.seq = reading.seq
                     JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
                     JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
                     WHERE (kanji.keb = '${t['surface_form']}' OR reading.reb = '${t['surface_form']}' ) AND sense.pos LIKE '%${posMapping[t['pos']]}%'
                 `
+                t['co'] = co++
                 t['accepted'] = true
             } else {
                 t['accepted'] = false
             }
+            // console.log("surface form: ", t['surface_form'], " ", t['accepted'], " " , t['co'])
 
         }
-        console.timeEnd("token 1 loop")
+        // console.timeEnd("token 1 loop")
         wq += `
         )
-        SELECT GROUP_CONCAT(DISTINCT(gloss)) AS gloss
+        SELECT GROUP_CONCAT(DISTINCT(gloss)) AS gloss, co
         FROM filtered_data
         GROUP BY co
         `
-        // console.log(wq, s['jp_sentence'])
+        // console.log("done")
         
-        console.time("parts")
+        // console.time("parts")
         let parts = await executeQuery(wq)
-        console.timeEnd("parts")
+        // console.timeEnd("parts")
 
         let pid = 0
-        console.time("token 2 loop")
+        // console.time("token 2 loop")
 
         for (const t of tokens) {
-
+            let g = ''
+            if (t['co']){
+                const tempGloss = parts.find((p) => p['co'] == t['co'])
+                g = (tempGloss) ? tempGloss['gloss'] : g  
+            }
             s['structure'].push({
                 "word":t['surface_form'],
                 "reading_katakana":t['reading'],
                 "reading_hiragana":wanakana.toHiragana(t['reading']),
                 "romaji":wanakana.toRomaji(t['reading']),
                 "pos" : posMapping[t['pos']],
-                "gloss": (t['accepted']) ? (parts[pid] && parts[pid++]['gloss'] || '') : ''
+                "gloss": g
             })
-
         }
-        console.timeEnd("token 2 loop")
+        // console.timeEnd("token 2 loop")
 
     }
     return sentences
@@ -180,7 +189,7 @@ app.get('/api/quiz/:field/:freq?/:limit?', async (req, res) => {
         const field = req.params.field.toLowerCase()
         const limit = req.params.limit || 1
         const freq = req.params.freq || 0
-        console.log(field," " ,limit," " ,freq)
+        // console.log(field," " ,limit," " ,freq)
         if (field in levels && parseInt(limit) > 0 && parseInt(freq) >= 0){
 
             const sentencesUnstructured = await getQuiz(levels[field], limit, freq)
@@ -230,25 +239,26 @@ app.post('/api/custom', async (req, res) => {
         res.json(sentencesStructured)
 
    } catch (err) {
-        res.status(500).json({error: 'DATABASE ERROR'})
+        res.status(500).json({error: `DATABASE ERROR ${err}`})
    }
 
 })
 app.post('/api/custominput', async (req, res) => {
     try {
-        console.time("MAIN tokenizer")
+        // console.time("MAIN tokenizer")
         const tokenizer = await initializeTokenizer()
-        console.timeEnd("MAIN tokenizer")
+        // console.timeEnd("MAIN tokenizer")
 
         const input = req.body.texts || ''
         if (!input) throw "INVALID INPUT"
         const sentences = [{'jp_sentence': input}]
-        console.time("MAIN sntenc")
+        // console.time("MAIN sntenc")
         const sentencesStructured = await structurize(sentences, tokenizer)
-        console.timeEnd("MAIN sntenc")
+        // console.timeEnd("MAIN sntenc")
+        // console.log(sentencesStructured[0]['structure'])
         res.json(sentencesStructured)
     } catch (err){
-        res.status(500).json({error: 'DATABASE ERROR'})
+        res.status(500).json({error: `DATABASE ERROR ${err}`})
     }
 })
 app.get('/api/random:limit?', async (req, res) => {

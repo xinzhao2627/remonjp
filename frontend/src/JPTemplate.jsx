@@ -44,11 +44,15 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
             'n3':{'isActive':true, 'value':null, 'position':3},
             'n2':{'isActive':true, 'value':null, 'position':4},
             'n1':{'isActive':true, 'value':null, 'position':5}
-        },
-        'showUnderline':true,
-        'showFurigana':true,
-        'showRomaji':false
+        }
     })
+
+    // CONFIG VISUALS
+    const [showUnderline, setShowUnderline] = useState(true);
+    // const [showFurigana, setShowFurigana] = useState(true);
+    const [showRomaji, setShowRomaji] = useState(true);
+
+
 
     // TTTT
     const [userAnswer, setUserAnswer] = useState('')
@@ -109,19 +113,21 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
                                 {hasParts ?
                                     <li className="segment mb-2" key={`li-${word}-${i}`} >
                                         <span className="segment-container" key={`span-container-${word}-${i}`}>
-                                        <span  className="readings mt-2" key={`readings-${word}-${i}`}
-                                            style={{color: '#b0b0b0', fontSize:'initial'}}
-                                        >{hiragana}</span>
-                                        <span
-                                            className="word"
-                                            style={{
-                                            borderBottom:'2px solid #37B7C3',
-                                            cursor:'pointer',
-                                            }}
-                                            key={`word-${word}-${i}`}
-                                        >
-                                            {word}
-                                        </span>
+                                            <span  className="readings mt-2" key={`readings-${word}-${i}`}
+                                                style={{color: '#b0b0b0', fontSize:'initial'}}
+                                            >
+                                                {hiragana}
+                                            </span>
+                                            <span
+                                                className="word"
+                                                style={{
+                                                borderBottom:'2px solid #37B7C3',
+                                                cursor:'pointer',
+                                                }}
+                                                key={`word-${word}-${i}`}
+                                            >
+                                                {word}
+                                            </span>
                                         </span>
                                     </li>
                                     : <li className="segment mb-2 comma" key={`li-${word}-${i+i}`} style={{cursor:'pointer'}}>
@@ -159,7 +165,6 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
             new_structSentence.push(fparts)
         }
         if (new_ids.length){
-            console.log(new_ids)
             setStructRomaji(structRomaji.concat(new_rom))
             setStructSentences(structSentences.concat(new_structSentence))
             setEnSentences(enSentences.concat(new_ens))
@@ -198,7 +203,7 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
 
         if (isValid && res && type){
             const d = await res.json()
-            if (d || !d['error']){
+            if (d &&  !d['error']){
                 const flag = await formatData(d)
                 if (flag){
                     setItemIndex(itemIndex+1)
@@ -249,13 +254,13 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
     }
 
     const checkText = (k) => {
-        setUserSubmitted(true)
+        setUserSubmitted(!userSubmitted)
 
         // CHECK K
     }
     return (
         <div style={{height:'100vh'}}>
-        <JPMenu />
+            <JPMenu />
             <div style={{flexDirection:'column',display:'flex',alignItems:'center', justifyContent:'center'}} className='mt-5'>
                     <div width={'100%'}>
                         {(typeof structSentences[itemIndex] === "undefined" && !startLoading) 
@@ -265,11 +270,29 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
                             :<>
                                 {structSentences[itemIndex]}
                                 <>
-                                    <Text as={'sup'} fontStyle={'italic'} fontFamily={'courier new'} color={'grey'}>press enter to check</Text>
+                                    <Text 
+                                        className='py-2 px-3 '
+                                        as={'sup'} 
+                                        fontStyle={'italic'} 
+                                        fontFamily={'courier new'} 
+                                        color={'teal.400'}
+                                        transition={'all 0.3s ease-in-out'}
+                                        border= '1px'
+                                        borderRadius= '4px'
+                                        cursor={'pointer'}
+                                        _hover={{
+                                            color:'teal.600',
+                                            borderColor:'teal.600'
+                                        }}
+                                        onClick={() => checkText()}
+                                        >
+
+                                            press enter to check
+                                    </Text>
                                     <Input 
                                         value={userAnswer} onChange={e => setUserAnswer(e.target.value)} 
                                         variant='flushed' size='lg' 
-                                        onKeyDown={e => (e.key==="Enter" && checkText(e.key))}
+                                        onKeyDown={e => (e.key==="Enter" && checkText())}
                                         height={'auto'}
                                         className='py-1 px-2 mb-5 ent'
                                         fontSize={'4xl'}
@@ -293,7 +316,7 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
                         }
                 </div>
             </div>
-            <Box className='mb-2' style={{height:'30%'}}>
+            <Box className='mb-2 mt-5' style={{height:'30%'}}>
                 {(typeof structSentences[itemIndex] === "undefined" || startLoading) 
                     ? null
                     : (
@@ -306,8 +329,12 @@ function JMTemplate ({subUrl, btnLabel, type, field})  {
 
                 <Box>
                     <Button colorScheme='blue' variant='outline' onClick={() => fetchRandom(subUrl)} className='m-1'>{btnLabel}</Button>
-                    {(type === 'custom' && <Config configDict={configDict} setConfigDict={setConfigDict}/>)}
                     <DrawerKanji kanji_data = {structKanji[itemIndex]} />
+                    {type === "custom" && <Config 
+                        configDict={configDict} 
+                        setConfigDict={setConfigDict} 
+                        type={type} 
+                    />}
                 </Box>
                 {(type === 'quiz') && <QuizInput 
                     quizCount={quizCount}

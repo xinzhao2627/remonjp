@@ -4,9 +4,9 @@ import './App.css'
 import React, { useState, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 function QuizInput({quizCount, quizFreq, setQuizCount, setQuizFreq}) {
-    return <Box display={'flex'} justifyContent={'center'} className='mb-2'>
+    return <Box display={'flex'} justifyContent={'center'} className='my-3'>
         <Box>
-            <Text className='m-1 ent' fontWeight={'200'}>Count per generate</Text>
+            <Text className='m-1 ent' fontWeight={'300'}>Count per generate</Text>
             <NumberInput
                 className='mx-2 ent'  
                 min={1} 
@@ -15,11 +15,11 @@ function QuizInput({quizCount, quizFreq, setQuizCount, setQuizFreq}) {
                 value={quizCount}
                 onChange={e => setQuizCount(e)}
                  >
-                <NumberInputField className='p-1' fontWeight={'300'} textAlign={'center'}/>
+                <NumberInputField className='p-1' fontWeight={'300'} textAlign={'center'} borderRadius={'5px'}/>
             </NumberInput>
         </Box>
         <Box>
-            <Text className='m-1 ent' fontWeight={'200'}>Frequency of jlpt</Text>
+            <Text className='m-1 ent' fontWeight={'300'}>Frequency of jlpt</Text>
             <NumberInput
                 className='mx-2 ent' 
                 min={1} 
@@ -27,7 +27,7 @@ function QuizInput({quizCount, quizFreq, setQuizCount, setQuizFreq}) {
                 size={'xs'}
                 value={quizFreq}
                 onChange={e => setQuizFreq(e)}>
-                <NumberInputField className='p-1' fontWeight={'300'} textAlign={'center'}/>
+                <NumberInputField className='p-1' fontWeight={'300'} textAlign={'center'} borderRadius={'5px'}/>
             </NumberInput>
         </Box>
 

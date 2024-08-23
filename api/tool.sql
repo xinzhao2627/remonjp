@@ -280,3 +280,89 @@ CREATE TABLE composition(
 
 
 )
+
+    -- SELECT sense.seq, gloss_list.gloss, reading.reb AS word
+    -- FROM jmdict_r_ele AS reading 
+    -- JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+    -- JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+    -- JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+    -- WHERE (kanji.keb = '無料' OR reading.reb = '無料')
+
+WITH filtered_data AS (
+
+            SELECT 
+            gloss_list.gloss, 0 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '英語' OR reading.reb = '英語' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 1 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '番組' OR reading.reb = '番組' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 2 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '聴け' OR reading.reb = '聴け' ) AND sense.pos LIKE '%verb%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 3 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '無料' OR reading.reb = '無料' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 4 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '英語' OR reading.reb = '英語' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 5 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = '勉強' OR reading.reb = '勉強' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 6 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = 'する' OR reading.reb = 'する' ) AND sense.pos LIKE '%verb%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 7 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = 'こと' OR reading.reb = 'こと' ) AND sense.pos LIKE '%noun%'
+            UNION ALL 
+            SELECT 
+            gloss_list.gloss, 8 as co, kanji.keb, reading.reb
+            FROM jmdict_r_ele AS reading 
+            JOIN jmdict_sense AS sense ON sense.seq = reading.seq
+            JOIN jmdict_gloss_list AS gloss_list ON gloss_list.senseID = sense.senseID
+            JOIN jmdict_k_ele AS kanji ON kanji.seq = reading.seq
+            WHERE (kanji.keb = 'できる' OR reading.reb = 'できる' ) AND sense.pos LIKE '%verb%'
+        
+)
+SELECT *, GROUP_CONCAT(DISTINCT(gloss)) AS gloss
+FROM filtered_data
+GROUP BY co

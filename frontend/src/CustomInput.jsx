@@ -8,23 +8,9 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
-
-const japDummy = `切政ルラご史際ぴふ事種の法結そす社芸ぜやまよ内参真ヤヨタミ辞戸ウタレ権好テ意返ソモ低岐62経うす方空テケ募劣嘆寧皿すずご。入にぞもせ知共ドろ衆当ニケミ日激ぞほフと似銭かふ裕立こゃ正能ぱに作低残んリ必日クヌヘ観季セホサ問14政医乗でぎーす。務み中同ニホワ利目ツ弘社ケヨコリ全千レ刑13載比べ伸40振ょろ真安ど得志ヒツヤネ慈廃道をじまへ高格ヤモコレ元版孤ヱシムハ面写融達つ。
-
-時撃ツソ作景ユヲツ了惑メソヨ反立ッスぶリ倣留ユ米8案得に極変ケ無局席位米天タレワ者嗅尽措ゃぱ。段おね代物へめあみ体料フへ盟映ト形座質リぎ目催ヨウニ特1皇ルぴび竹社ね機抗がんれ政真文ソヱヤニ現像英てう。詐ヒマアノ再児れろイ味6品ヤナネ名増アヌ保61代尊9比カ実臣ぽけスふ特能ぜげば能所ヒニハシ記白クろざ興祭ヒエ不間べ縄聴遊御裕ト。
-
-舫ハシ堪落よラひ月合風ごさ賞陥スのげ芦型い難対ぞりふぎ上高た安62毎請ラろけて念議8義型働けぞ。売リカムイ権上ごぜい止公セニ協業ラ福併ヘ付検ドで行球わ成前県ヌニツ今訪とフ丈芸ク険載ハクツル陸62報集ろよね支凶圭寂た。秋ぞよ閣1各フ館用ワヤシハ光億クモ掲引ハ理決ニエレ寄投図イ連止通ケツアヲ間近詳いン奇輸シムテ一介れく滞連カ庁興結もづる府婦項互イえぼッ。
-
-9界イノヲラ葉社へづ歳報努み集書ナイノ信歓実へほ更円むどざゆ真感オ掲惑焉げッ壇裁材造指こドよ。7岡だーッま事写チメ近説シメユハ入健ち応生芸金ス確誘ワ使計ラじ意攻ツケ目好職タヱ録抜爆じの。情サヨユノ跳者ねべふる広俊将おなる今教リ面9固ぽかッレ交贅ろルトば京70航ヘモ枠天ラヌオク熊回コ能表ヱキヤ来山もる毎研ワモユソ揮徴レスじへ煙交歯ル加作ぱン込速スイム写侍勃んン。
-
-6香ソスタウ一軽の駒宰ょな全月じルご及96中な年仏さ蔵安ウリスケ身考ル当囲ハラムヌ転柴ほこ村徳弁戦ワツコ業娯スリイ離演ト聖続面ル赤聴てふぽ。回お被歳ち任94権ざおみ富山流カミリ形秀ウ初審勲ワ支変場ニヱレ担瀬こかく中度うだしル高嗅61盤ぐドリこ軽37法ヨキ月織ねつぼ定人ヲリモナ市労ごそ。
-
-堂ゅ実就ンょぽぴ受空ふぎ通厚しあゆ脅催ヱサヨ権向ヨ門界法トきぼス鮮朝ケロ文額35信`
-
 function CustomInput() {
     // 
-    const [input, setinput] = useState('切政ルラご史際ぴふ事種の')
-    const [isStructurized, setIsStructurized] = useState(false)
+    const [input, setinput] = useState('切政ルラご史際ぴふ事種の') // default input as an example
     const [tabIndex, setTabIndex] = useState(0)
     const [structId, setStructId] = useState([])
     // GENERAL: MAIN SCREEN CONTENT INFO AFTER GENERATION
@@ -32,9 +18,6 @@ function CustomInput() {
     const [kanji, setKanji] = useState()
     // GENERAL: LOADING PROCS 
     const [startLoading, setStartLoading] = useState(false)
-    // TTTT
-    const [userAnswer, setUserAnswer] = useState('')
-    const [userSubmitted, setUserSubmitted] = useState(false)
 
 
     const formatData = async (d) => {
@@ -43,11 +26,7 @@ function CustomInput() {
         for (const sentence of d) {
             const id = sentence.jp_id
             if (structId.includes(id)) continue
-
-            const jp = sentence.jp_sentence
-            const en = sentence.en_sentence
             const structs = sentence.structure
-            const kanji = sentence.kanji
             let rm_sentence = ''
 
             fp=<ul key={sentence.jp_id} className='sentence' style={{paddingLeft:'0'}}> 
@@ -106,9 +85,7 @@ function CustomInput() {
                 </React.Fragment>
             })}
         </ul> 
-            setFpart(
-                fp
-            )
+            setFpart(fp)
             kj = <Box>
             {
                 sentence.kanji.map((k, i) => {
@@ -141,8 +118,6 @@ function CustomInput() {
         setKanji('')
         let res = undefined
         setStartLoading(true)
-        setUserSubmitted(false)
-        setUserAnswer('')
 
         const options = {
             method : 'POST',
@@ -153,11 +128,13 @@ function CustomInput() {
         if (res){
             const d = await res.json()
             console.log('d: ', d)
-            if (d || !d['error']){
+            if (d &&  !d['error']){
                 const flag = await formatData(d)
                 // console.log("flag: ", flag)
                 if (!flag){
                     alert('There was a problem on fetching data')
+                } else {
+                    setTabIndex(1)
                 }
             } else {
                 alert(
@@ -171,7 +148,7 @@ function CustomInput() {
             )
         }
         setStartLoading(false)
-        setTabIndex(1)
+        
     }
 
 

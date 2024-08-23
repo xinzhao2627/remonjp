@@ -31,8 +31,7 @@ import {
     NumberDecrementStepper,
     Center,
 } from '@chakra-ui/react'
-
-function Config({configDict, setConfigDict}) {
+function Config({configDict, setConfigDict,type}) {
 
     const {isOpen, onOpen, onClose} = useDisclosure()
     const inputRefs= useRef({})
@@ -54,11 +53,6 @@ function Config({configDict, setConfigDict}) {
                     [[config_name]]: new_jlpt_n,
                 }
             })
-        } else{
-            setConfigDict({
-                ...configDict,
-                [config_name]: config_value
-            })
         }
     }
 
@@ -79,71 +73,80 @@ function Config({configDict, setConfigDict}) {
             ...configDict,
             'jlpt_levels': new_jlpt_levels
         })
-        console.log({'jlpt_levels': new_jlpt_levels})
+        // console.log({'jlpt_levels': new_jlpt_levels})
     }
     return (<>
 
-        <IconButton aria-label='expand-kanji' colorScheme='teal' icon={<HamburgerIcon/>} className='m-1'  onClick={onOpen}/> 
+        <IconButton aria-label='expand-kanji' colorScheme='blue' variant={'outline'} icon={<HamburgerIcon/>} className='m-1'  onClick={onOpen}/> 
         <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>Configurations</ModalHeader>
           <ModalBody pb={6} >
-            <Box >
+            {/* <Box >
                 <FormLabel htmlFor='underlines' mb='0' className='d-inline-block'>
                     Underlines
                 </FormLabel>
-                <Switch isChecked={configDict['showUnderline']} id='underlines' onChange={(e) => changeConfig('showUnderline', e.target.checked)}/>
+                <Switch isChecked={showUnderline} id='underlines' onChange={(e) => setShowUnderline(e.target.checked)}/>
             </Box>
             <Box >
                 <FormLabel htmlFor='showFurigana' mb='0' className='d-inline-block'>
                     Show furigana
                 </FormLabel>
-                <Switch isChecked={configDict['showFurigana']} id='showFurigana' onChange={(e) => changeConfig('showFurigana', e.target.checked)}/>
+                <Switch isChecked={showFurigana} id='showFurigana' onChange={(e) => {
+                    console.log(e, showFurigana)
+                    setShowFurigana(e.target.checked)
+                }}/>
             </Box>
             <Box>
                 <FormLabel htmlFor='romaji' mb='0' className='d-inline-block'>
                     Romaji
                 </FormLabel>
-                <Switch isChecked={configDict['showRomaji']} id='romaji' onChange={(e) => changeConfig('showRomaji', e.target.checked)}/>
-            </Box>
-            <Box className='mt-4 p-3' width={'100%'}>
-                <RangeSlider defaultValue={[ranges[0],ranges[ranges.length-1]]} min={1} max={5} step={1} onChangeEnd={manageSlider}>
-                    <RangeSliderTrack bg='red.100'>
-                        <RangeSliderFilledTrack bg='tomato' />
-                    </RangeSliderTrack>
-                    {[5,4,3,2,1].map((x,i) => {
-                        return <RangeSliderMark key={'rsm-'+x} value={i+1} className={`cl${x} mt-2`}>
-                            N{x}
-                        </RangeSliderMark>
-                    })}
-                    <RangeSliderThumb boxSize={4} index={0} borderColor={'#d4d4d4'}/>
-                    <RangeSliderThumb boxSize={4} index={1} borderColor={'#d4d4d4'}/>
-                </RangeSlider>
-            </Box>
-            <Center className='row'>
-                {[5,4,3,2,1].map((x,i) => {
-                    return (
-                        <NumberInput
-                            focusBorderColor='lime'
-                            variant='flushed'
-                            key={`n${x}-${i}`} 
-                            min={0} max={20} allowMouseWheel 
-                            value={configDict['jlpt_levels'][`n${x}`]['value'] || ''} 
-                            className={`col-sm ${paddingsArr[i]}`} 
-                            size={'s'} 
-                            onMouseEnter={() => mouseInputFocus(i)} 
-                            onChange={(e) => changeConfig(`n${x}`, e)}
-                            isDisabled={!configDict['jlpt_levels'][`n${x}`]['isActive']}>
-                            
-                            <NumberInputField  
-                                className='p-1' 
-                                ref={(e) => (inputRefs.current[i] = e)}/>
-                        </NumberInput>
-                    )
-                })}
+                <Switch isChecked={showRomaji} id='romaji' onChange={(e) => setShowRomaji(e.target.checked)}/>
+            </Box> */}
+            {type === "custom" &&             
+                <Box>
+                    <Box className='mt-4 p-3' width={'100%'}>
+                        <RangeSlider defaultValue={[ranges[0],ranges[ranges.length-1]]} min={1} max={5} step={1} onChangeEnd={manageSlider}>
+                            <RangeSliderTrack bg='red.100'>
+                                <RangeSliderFilledTrack bg='tomato' />
+                            </RangeSliderTrack>
+                            {[5,4,3,2,1].map((x,i) => {
+                                return <RangeSliderMark key={'rsm-'+x} value={i+1} className={`cl${x} mt-2`}>
+                                    N{x}
+                                </RangeSliderMark>
+                            })}
+                            <RangeSliderThumb boxSize={4} index={0} borderColor={'#d4d4d4'}/>
+                            <RangeSliderThumb boxSize={4} index={1} borderColor={'#d4d4d4'}/>
+                        </RangeSlider>
+                    </Box>
+                    <Center className='row'>
+                        {[5,4,3,2,1].map((x,i) => {
+                            return (
+                                <NumberInput
+                                    focusBorderColor='lime'
+                                    variant='flushed'
+                                    key={`n${x}-${i}`} 
+                                    min={0} max={20} allowMouseWheel 
+                                    value={configDict['jlpt_levels'][`n${x}`]['value'] || ''} 
+                                    className={`col-sm ${paddingsArr[i]}`} 
+                                    size={'s'} 
+                                    onMouseEnter={() => mouseInputFocus(i)} 
+                                    onChange={(e) => changeConfig(`n${x}`, e)}
+                                    isDisabled={!configDict['jlpt_levels'][`n${x}`]['isActive']}>
+                                    
+                                    <NumberInputField  
+                                        className='p-1' 
+                                        ref={(e) => (inputRefs.current[i] = e)}/>
+                                </NumberInput>
+                            )
+                        })}
 
-            </Center>
+                    </Center>
+                </Box>
+            }
+
+
           </ModalBody>
           <ModalFooter>
             <Button colorScheme='pink' mr={1} onClick={onClose}>
