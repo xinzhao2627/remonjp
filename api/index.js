@@ -3,6 +3,7 @@ const cors = require('cors')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
 // const db = require('better-sqlite3')('./rdict.db')
+const PORT = process.env.PORT || 4000
 const sqlite3 = require('sqlite3').verbose()
 let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
     if (err) return console.error(err.message);
@@ -11,7 +12,9 @@ let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
 
 const app = express()
 // MIDDLE WARES
-app.use(cors())
+app.use(cors({
+    origin:'*',
+}))
 
 
 
@@ -306,3 +309,4 @@ app.listen(4000, () => {
 process.on('exit', () => {db.close()})
 
 
+module.exports = app
