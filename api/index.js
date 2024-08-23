@@ -288,7 +288,7 @@ app.get('/api/random:limit?', async (req, res) => {
         res.json(sentencesStructured)
     } catch (err) {
         console.error(err)
-        res.status(500).json({ error: `Database error`})
+        res.status(500).json({ error: `Database error ${err}`})
     }
 })
 
