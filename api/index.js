@@ -4,12 +4,11 @@ const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
 
-
-
-// const db = require('better-sqlite3')('./rdict.db')
 const PORT = process.env.PORT || 4000
+
 const sqlite3 = require('sqlite3').verbose()
-let db = new sqlite3.Database('rdict.db', sqlite3.OPEN_READONLY, (err) => {
+const dbpath = path.resolve(__dirname, 'rdict.db')
+let db = new sqlite3.Database(dbpath, sqlite3.OPEN_READONLY, (err) => {
     if (err) return console.error(err.message);
 })
 
