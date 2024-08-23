@@ -296,12 +296,12 @@ app.get('/', (req, res) => {
     res.send("remonjp api on vercel, see: \n /api/random \n /api/quiz and other post requests!")
 })
 
-app.use((req, res, next) => {
-    res.status(404).json({
-        error: "Not Found",
-        message: "The requested resource could not be found."
-    });
-});
+// app.use((req, res, next) => {
+//     res.status(404).json({
+//         error: "Not Found",
+//         message: "The requested resource could not be found."
+//     });
+// });
 app.listen(PORT, () => {
     initializeTokenizer()
 })
