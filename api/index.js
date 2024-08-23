@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
 
@@ -53,7 +54,7 @@ let tokenizer;
 async function initializeTokenizer() {
     if (!tokenizer){
         tokenizer = await new Promise ((resolve, reject) => {
-            kuromoji.builder({ dicPath: "kurodict/" }).build(function (err, tokenizer) {
+            kuromoji.builder({ dicPath: path.resolve(__dirname, 'kurodict/') }).build(function (err, tokenizer) {
                 if (err){
                     reject(err)
                 } else {
@@ -269,7 +270,7 @@ app.post('/api/custominput', async (req, res) => {
 })
 app.get('/api/random:limit?', async (req, res) => {
     try {
-        console.time(`OVERALL`)
+        // console.time(`OVERALL`)
         // console.time("INITIALIZE TOKEN")
         const tokenizer = await initializeTokenizer() 
         // console.timeEnd("INITIALIZE TOKEN")
@@ -286,8 +287,8 @@ app.get('/api/random:limit?', async (req, res) => {
         // console.time("struct sentence")
         const sentencesStructured = await structurize(sentencesUnstructured, tokenizer)
         // console.timeEnd("struct sentence")
-        console.timeEnd(`OVERALL`)
-        console.log('==========\n')
+        // console.timeEnd(`OVERALL`)
+        // console.log('==========\n')
         res.json(sentencesStructured)
     } catch (err) {
         console.error(err)
