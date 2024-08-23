@@ -11,9 +11,6 @@
         "src": "/(.*)",
        "dest": "index.js"
       }
-    ],
-    "files": {
-        "node_modules/kuromoji/dict/**/*": true
-    }
+    ]
   }
   
