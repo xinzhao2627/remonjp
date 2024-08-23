@@ -278,9 +278,6 @@ app.get('/api/random:limit?', async (req, res) => {
         res.status(500).json({ error: `Database error`})
     }
 })
-
-
-
 app.listen(4000, () => {
     initializeTokenizer()
 })

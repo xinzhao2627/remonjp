@@ -272,3 +272,11 @@ WHERE
 
 CREATE INDEX idx_kanji_k_element ON kanji(k_element)
 CREATE INDEX idx_desc_m_element ON desc(m_element)
+
+
+CREATE TABLE composition(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    
+
+
+)
