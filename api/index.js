@@ -302,7 +302,7 @@ app.use((req, res, next) => {
         message: "The requested resource could not be found."
     });
 });
-app.listen(4000, () => {
+app.listen(PORT, () => {
     initializeTokenizer()
 })
 
