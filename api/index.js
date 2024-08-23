@@ -2,6 +2,9 @@ const express = require('express')
 const cors = require('cors')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
+
+
+
 // const db = require('better-sqlite3')('./rdict.db')
 const PORT = process.env.PORT || 4000
 const sqlite3 = require('sqlite3').verbose()
@@ -50,7 +53,7 @@ let tokenizer;
 async function initializeTokenizer() {
     if (!tokenizer){
         tokenizer = await new Promise ((resolve, reject) => {
-            kuromoji.builder({ dicPath: "node_modules/kuromoji/dict/" }).build(function (err, tokenizer) {
+            kuromoji.builder({ dicPath: "kurodict/" }).build(function (err, tokenizer) {
                 if (err){
                     reject(err)
                 } else {
