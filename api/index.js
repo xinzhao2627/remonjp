@@ -328,7 +328,7 @@ app.get('/', (req, res) => {
 
 app.get('/api/hoen', async (req, res) => {
     try {
-        const result = await sql`CREATE TABLE Pets ( Name varchar(255), Owner varchar(255) );`;
+        const result = await sql`SELECT * FROM SENTENCES LIMIT 10`;
         return res.status(200).json({ result });
 
     } catch (err){
