@@ -3,6 +3,8 @@ const cors = require('cors')
 const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
+const {sql} = require('@vercel/postgres')
+
 // const sqlite3 = require('sqlite3').verbose()
 //
 const {Client} = require('pg')
@@ -322,6 +324,21 @@ app.get('/', (req, res) => {
 //         message: "The requested resource could not be found."
 //     });
 // });
+
+
+app.get('/api/hoen', async (req, res) => {
+    try {
+        const result = await sql`CREATE TABLE Pets ( Name varchar(255), Owner varchar(255) );`;
+        return response.status(200).json({ result });
+
+    } catch (err){
+        // console.log(err.message)
+        res.status(500).json({error: `eroor hoen ${err.message}`})
+    }
+})
+
+
+
 app.listen(PORT, () => {
     client.connect()
     initializeTokenizer()
