@@ -3,10 +3,7 @@ const cors = require('cors')
 const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
-const {sql} = require('@vercel/postgres')
 require('dotenv').config()
-// const sqlite3 = require('sqlite3').verbose()
-//
 const {Pool} = require('pg')
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL
@@ -322,16 +319,16 @@ app.get('/', (req, res) => {
 // });
 
 
-app.get('/api/hoen', async (req, res) => {
-    try {
-        const result = await sql`SELECT * FROM SENTENCES LIMIT 10`;
-        return res.status(200).json({ result });
+// app.get('/api/hoen', async (req, res) => {
+//     try {
+//         const result = await sql`SELECT * FROM SENTENCES LIMIT 10`;
+//         return res.status(200).json({ result });
 
-    } catch (err){
-        // console.log(err.message)
-        res.status(500).json({error: `eroor hoen ${err.message}`})
-    }
-})
+//     } catch (err){
+//         // console.log(err.message)
+//         res.status(500).json({error: `eroor hoen ${err.message}`})
+//     }
+// })
 
 
 
