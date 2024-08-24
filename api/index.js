@@ -4,16 +4,12 @@ const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
 const {sql} = require('@vercel/postgres')
-
+require('dotenv').config()
 // const sqlite3 = require('sqlite3').verbose()
 //
-const {Client} = require('pg')
-const client = new Client({
-    host:'localhost',
-    user:'postgres',
-    port:5432,
-    password:'postgres',
-    database:'remondict.db'
+const {Pool} = require('pg')
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL
 })
 
 const PORT = process.env.PORT || 4000
@@ -38,7 +34,7 @@ const posMapping = {
 }
 async function executeQuery(query, p = []) {
     // console.log(query + " " + p)
-    let ans = await client.query(query, p)
+    let ans = await pool.query(query, p)
     return ans.rows;
 }
 let tokenizer;
@@ -190,7 +186,7 @@ app.get('/try', async (req, res) => {
     try {
 
         const query = "SELECT * FROM SENTENCES LIMIT 5"
-        const q = await client.query(query)
+        const q = await pool.query(query)
         console.log(q.rows)
         res.json(q.rows);
     } catch (err){
