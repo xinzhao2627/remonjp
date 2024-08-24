@@ -3,25 +3,23 @@ const cors = require('cors')
 const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
+// const sqlite3 = require('sqlite3').verbose()
 
-const PORT = process.env.PORT || 4000
-
-const sqlite3 = require('sqlite3').verbose()
-const dbpath = path.resolve(__dirname, 'rdict.db')
-let db = new sqlite3.Database(dbpath, sqlite3.OPEN_READONLY, (err) => {
-    if (err) return console.error(err.message);
+const {Client} = require('pg')
+const client = new Client({
+    host:'localhost',
+    user:'postgres',
+    port:5432,
+    password:'postgres',
+    database:'remondict.db'
 })
 
-
+const PORT = process.env.PORT || 4000
 const app = express()
 // MIDDLE WARES
 app.use(cors({
     origin:'*',
 }))
-
-
-
-
 app.use(express.json())
 const posMapping = {
     '名詞': 'noun',
@@ -37,18 +35,10 @@ const posMapping = {
     'その他': 'other'
 }
 async function executeQuery(query, p = []) {
-    return new Promise((resolve, reject) => {
-        db.all(query, p, (err, rows) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(rows);   
-
-            }
-        });
-    });
+    // console.log(query + " " + p)
+    let ans = await client.query(query, p)
+    return ans.rows;
 }
-
 let tokenizer;
 async function initializeTokenizer() {
     if (!tokenizer){
@@ -76,25 +66,27 @@ async function tokenizeSentence (sentence){
 async function lookupKanji(s){
     q = `
         SELECT 
-            k.*, GROUP_CONCAT(d.meaning) AS meanings
+            k.k_element, k.old_jlpt, k.new_jlpt, string_agg(d.meaning, ',') AS meanings
         FROM
-            kanji k
+            kanji AS k
         JOIN
-            desc  d
+            jm_desc  AS d
             ON d.m_element = k.k_element
         WHERE 
-            ? 
+            $1 
             LIKE CONCAT('%', k_element, '%') 
     `
-    return await executeQuery(q+" GROUP BY k_element", [s['jp_sentence']])
+    return await executeQuery(q+" GROUP BY k_element,k.new_jlpt, k.old_jlpt", [s['jp_sentence']])
 }
 async function getQuiz (lv, limit, freq){
     let arr = []
     let toConcat = []
+    let paramCount = 1
     q1 = 'SELECT * FROM sentences WHERE '
     for (let i = 5; i > 0; i--){
         arr.push((i === lv) ? freq : 0)
-        toConcat.push((!freq && i === lv)? `n${i} >= ? ` : `n${i} = ? `)
+        toConcat.push((!freq && i === lv)? `n${i} >= ${'$'+paramCount} ` : `n${i} = ${'$'+paramCount} `)
+        paramCount++
     }
     let q2 = toConcat.map((x, i) => {
         let s = (i !== 0) ? " AND ":""
@@ -102,7 +94,7 @@ async function getQuiz (lv, limit, freq){
         return s
     })
     arr.push(limit)
-    return await executeQuery(q1+(q2.join('')) + "ORDER BY random() LIMIT ? ", arr)
+    return await executeQuery(q1+(q2.join('')) + `ORDER BY random() LIMIT ${'$'+paramCount} `, arr)
 }
 async function structurize (sentences){
     
@@ -156,7 +148,7 @@ async function structurize (sentences){
         // console.timeEnd("token 1 loop")
         wq += `
         )
-        SELECT GROUP_CONCAT(DISTINCT(gloss)) AS gloss, co
+        SELECT string_agg(DISTINCT(gloss), ',') AS gloss, co
         FROM filtered_data
         GROUP BY co
         `
@@ -189,6 +181,25 @@ async function structurize (sentences){
     }
     return sentences
 }
+
+
+
+app.get('/try', async (req, res) => {
+    try {
+
+        const query = "SELECT * FROM SENTENCES LIMIT 5"
+        const q = await client.query(query)
+        console.log(q.rows)
+        res.json(q.rows);
+    } catch (err){
+        console.log(err.message)
+        res.status(500).json({error: `error ${err.message}`})
+    } finally {
+        
+    }
+
+
+})
 app.get('/api/quiz/:field/:freq?/:limit?', async (req, res) => {
     try{
         const levels = {'n5':5, 'n4':4, 'n3':3, 'n2':2, 'n1': 1}
@@ -216,19 +227,23 @@ app.post('/api/custom', async (req, res) => {
         const tokenizer = await initializeTokenizer() 
         const jlpt_levels = req.body.jlpt_levels
         const limit = req.body.limit || 1
-
+        console.log(jlpt_levels)
         if (!jlpt_levels && limit > 20) throw 'INVALID POST REQUEST'
         let q1 = "SELECT * FROM sentences "
+        let paramCount = 1
         let toConcat = []
         const arr = []
         for (const [k, v] of Object.entries(jlpt_levels)){
             if (v['isActive'] && Number.isInteger(parseInt(v['value']))){
-                toConcat.push(k + " = ? ")
+                toConcat.push(k + ` = ${'$'+paramCount} `)
                 arr.push(v['value'])
+                paramCount++
             } else  if (!v['isActive']){
-                toConcat.push(k + " = ? ")
+                toConcat.push(k + ` = ${'$'+paramCount} `)
                 arr.push(0)
+                paramCount++
             }
+            
         }
         q1 += (arr.length > 0 ) ? "WHERE ":''
 
@@ -238,13 +253,15 @@ app.post('/api/custom', async (req, res) => {
             return s
         })
 
-        q = q1+(q2.join('')) + "ORDER BY random() LIMIT ? "
+        q = q1+(q2.join('')) + `ORDER BY random() LIMIT ${'$'+paramCount} `
+        console.log(q)
         arr.push(limit)
         const sentencesUnstructured = await executeQuery(q, arr)
         const sentencesStructured = await structurize(sentencesUnstructured, tokenizer)
         res.json(sentencesStructured)
 
    } catch (err) {
+        console.log(err.message)
         res.status(500).json({error: `DATABASE ERROR ${err}`})
    }
 
@@ -275,7 +292,7 @@ app.get('/api/random:limit?', async (req, res) => {
         // console.timeEnd("INITIALIZE TOKEN")
 
 
-        let q = 'SELECT * FROM sentences ORDER BY random() LIMIT ?'
+        let q = 'SELECT * FROM sentences ORDER BY random() LIMIT $1'
         let l = parseInt(req.params.limit)
         l =  l || 1 
 
@@ -306,10 +323,13 @@ app.get('/', (req, res) => {
 //     });
 // });
 app.listen(PORT, () => {
+    client.connect()
     initializeTokenizer()
 })
 
-process.on('exit', () => {db.close()})
+process.on('exit', () => {
+    client.end()
+    db.close()})
 
 
 module.exports = app
