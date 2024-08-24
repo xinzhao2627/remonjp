@@ -4,7 +4,7 @@ const path = require('path')
 const wanakana = require('wanakana')
 const kuromoji = require('kuromoji')
 // const sqlite3 = require('sqlite3').verbose()
-
+//
 const {Client} = require('pg')
 const client = new Client({
     host:'localhost',
