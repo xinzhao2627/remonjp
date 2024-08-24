@@ -124,7 +124,7 @@ function CustomInput() {
             headers : {'Content-Type': 'application/json'},
             body : JSON.stringify({"texts": input})
         }
-        res  = await fetch(`http://localhost:4000/api/custominput`, options)
+        res  = await fetch(`https://remonjp-api.vercel.app/api/custominput`, options)
         if (res){
             const d = await res.json()
             console.log('d: ', d)
