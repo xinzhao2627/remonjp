@@ -333,12 +333,12 @@ app.get('/', (req, res) => {
 
 
 app.listen(PORT, () => {
-    client.connect()
+    pool.connect()
     initializeTokenizer()
 })
 
 process.on('exit', () => {
-    client.end()
+    pool.end()
     db.close()})
 
 
