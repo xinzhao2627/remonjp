@@ -1,4 +1,4 @@
-# Remon - Morphological Analyzer / Sentence Generator 
+# Remon - Sentence Generator with Morphological Analyzer  
 
 Remon is a full-stack Japanese morphological analyzer designed to provide a collection of contextual Japanese sentences. 
 
