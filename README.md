@@ -1,9 +1,8 @@
-# Remon - Sentence Generator with Morphological Analyzer  
-
-Remon is a full-stack Japanese morphological analyzer designed to provide a collection of contextual Japanese sentences. 
+# Remon - 
+Remon is a full-stack Japanese Morphological Analyzer-applied contextual Japanese sentence generator, with measured JLPT sentences difficulty and frequency.  
 
 In summary, it utilizes the following: 
-- kuromoji a natural language processing library
+- kuromoji a natural language processing / morphological analyzer library 
 - database integration with built-in api
 - web scraping for data processing and analyzing JLPT levels.
 
