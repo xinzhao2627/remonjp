@@ -1,5 +1,5 @@
 # Remon - 
-Remon is a full-stack Japanese Morphological Analyzer-applied contextual Japanese sentence generator, with measured JLPT sentences difficulty and frequency.  
+Remon is a fullstack web app that applies morphological analysis to japanese tatoeba sentences and categorize them based on kanji and vocabulary JLPT level.
 
 In summary, it utilizes the following: 
 - kuromoji a natural language processing / morphological analyzer library 

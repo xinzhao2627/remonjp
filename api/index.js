@@ -79,15 +79,17 @@ async function getQuiz (lv, limit, freq){
     let paramCount = 1
     q1 = 'SELECT * FROM sentences WHERE '
     for (let i = 5; i > 0; i--){
-        arr.push((i === lv) ? freq : 0)
-        toConcat.push((!freq && i === lv)? `n${i} >= ${'$'+paramCount} ` : `n${i} = ${'$'+paramCount} `)
-        paramCount++
+        // if -1 then dont include
+        if (freq === -1 && i === lv) toConcat.push(`n${i} > 0`)
+        else {
+            arr.push((i === lv && freq !== -1) ? freq : 0);
+            toConcat.push((!freq && i === lv)? `n${i} >= ${'$'+paramCount} ` : `n${i} = ${'$'+paramCount} `)
+            paramCount++
+        }
     }
-    let q2 = toConcat.map((x, i) => {
-        let s = (i !== 0) ? " AND ":""
-        s+= x
-        return s
-    })
+    let q2 = toConcat.map((x, i) => (
+        (i !== 0 ? " AND ":"") + x
+    ))
     arr.push(limit)
     return await executeQuery(q1+(q2.join('')) + `ORDER BY random() LIMIT ${'$'+paramCount} `, arr)
 }
@@ -200,9 +202,9 @@ app.get('/api/quiz/:field/:freq?/:limit?', async (req, res) => {
         const levels = {'n5':5, 'n4':4, 'n3':3, 'n2':2, 'n1': 1}
         const field = req.params.field.toLowerCase()
         const limit = req.params.limit || 1
-        const freq = req.params.freq || 0
-        // console.log(field," " ,limit," " ,freq)
-        if (field in levels && parseInt(limit) > 0 && parseInt(freq) >= 0){
+        const freq = req.params.freq || -1
+        console.log(field," " ,limit," " ,freq)
+        if (field in levels && parseInt(limit) > 0){
 
             const sentencesUnstructured = await getQuiz(levels[field], limit, freq)
             const sentencesStructured = await structurize(sentencesUnstructured)
