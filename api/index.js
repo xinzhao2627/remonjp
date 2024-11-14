@@ -313,27 +313,6 @@ app.get('/', (req, res) => {
     res.send("remonjp api on vercel, see: \n /api/random \n /api/quiz and other post requests!")
 })
 
-// app.use((req, res, next) => {
-//     res.status(404).json({
-//         error: "Not Found",
-//         message: "The requested resource could not be found."
-//     });
-// });
-
-
-// app.get('/api/hoen', async (req, res) => {
-//     try {
-//         const result = await sql`SELECT * FROM SENTENCES LIMIT 10`;
-//         return res.status(200).json({ result });
-
-//     } catch (err){
-//         // console.log(err.message)
-//         res.status(500).json({error: `eroor hoen ${err.message}`})
-//     }
-// })
-
-
-
 app.listen(PORT, () => {
     pool.connect()
     initializeTokenizer()
